@@ -33,7 +33,7 @@ bp = Blueprint("listings", __name__, url_prefix="/api")
 
 
 # Auth service URL
-AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8000/api/users")
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8001/api/auth")
 
 
 
@@ -45,7 +45,7 @@ def get_token_data():
    
     if 'Authorization' in request.headers:
         auth_header = request.headers['Authorization']
-        if auth_header.startswith('Bearer '):
+        if auth_header.startswith('Token '):
             token = auth_header.split(" ")[1]
    
     if not token:
@@ -57,8 +57,8 @@ def get_token_data():
     try:
         response = requests.post(
             f"{AUTH_SERVICE_URL}/verify/",
-            json={"token": token},
-            timeout=5  
+            headers={"Authorization": f"Token {token}"},
+            timeout=5
         )
        
         if response.status_code == 200:
