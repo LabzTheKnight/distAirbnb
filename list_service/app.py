@@ -1,7 +1,7 @@
 # listing-service/app.py, the flask application is created and the blueprint for listings is registered.
 #by Afolabi Afolayan
 from flask import Flask
-from list_service.routes import bp as listings_bp
+from routes import bp as listings_bp
 
 # listing-service/app.py
 def create_app():

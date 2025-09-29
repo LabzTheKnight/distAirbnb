@@ -12,7 +12,7 @@
 
 from flask import Blueprint, request, jsonify, current_app
 from mongoengine.errors import ValidationError, DoesNotExist
-from list_service.models import Listing, Review
+from models import Listing, Review
 from datetime import datetime
 from functools import wraps
 import os
