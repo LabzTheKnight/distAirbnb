@@ -1,0 +1,82 @@
+Step-by-Step Frontend Development Guide
+Phase 1: Foundation (Start Here) 🏗️
+Step 1: Set up API communication
+Goal: Create your API client to talk to your backend services
+File: services/api/apiClient.ts
+What to learn: HTTP requests, base URLs, error handling
+Key concepts: axios/fetch, request interceptors, response handling
+Step 2: Create TypeScript types
+Goal: Define data structures for your app
+Create folder: types/
+Files to create: auth.ts, listing.ts, api.ts
+What to learn: TypeScript interfaces, type safety
+Key concepts: User type, Listing type, API response types
+Step 3: Set up token storage
+Goal: Store/retrieve authentication tokens
+File: services/storage/tokenStorage.ts
+What to learn: AsyncStorage, token management
+Key concepts: Persistent storage, security
+Phase 2: Authentication System 🔐
+Step 4: Create AuthContext
+Goal: Global authentication state
+File: context/AuthContext.tsx
+What to learn: React Context, state management
+Key concepts: Login/logout actions, user persistence
+Step 5: Build auth service
+Goal: Connect to your Django auth API
+File: services/api/authService.ts
+What to learn: API integration, error handling
+Key concepts: Login, register, token validation
+Step 6: Create auth screens
+Goal: Login and register UI
+Folder: app/(auth)/
+Files: login.tsx, register.tsx
+What to learn: Forms, validation, navigation
+Key concepts: Input handling, form submission
+Phase 3: Core App Structure 📱
+Step 7: Set up protected routing
+Goal: Show auth screens if not logged in
+File: app/_layout.tsx
+What to learn: Conditional rendering, route guards
+Key concepts: Auth state checking, navigation flow
+Step 8: Create basic UI components
+Goal: Reusable components
+Folder: components/ui/
+Files: Button.tsx, Input.tsx, Card.tsx
+What to learn: Component design, props, styling
+Key concepts: Reusability, theming
+Phase 4: Listings Feature 🏠
+Step 9: Create listing service
+Goal: Connect to your Flask listing API
+File: services/api/listingService.ts
+What to learn: CRUD operations, authenticated requests
+Key concepts: GET/POST/PUT/DELETE, token headers
+Step 10: Build listing components
+Goal: Display and manage listings
+Folder: components/listings/
+Files: ListingCard.tsx, ListingList.tsx
+What to learn: Data display, list rendering
+Key concepts: FlatList, card design, images
+Step 11: Create main screens
+Goal: Core app functionality
+Files: Update index.tsx, explore.tsx
+What to learn: Screen layout, data fetching
+Key concepts: useEffect, loading states
+Phase 5: Advanced Features 🚀
+Step 12: Add search and filters
+Step 13: Implement favorites
+Step 14: Add listing creation
+Step 15: Polish and testing
+Learning Resources for Each Step:
+For API/HTTP requests:
+Look up: fetch(), axios, HTTP status codes
+Practice: Making GET/POST requests
+For TypeScript:
+Look up: interface, type, optional properties (?)
+Practice: Defining object shapes
+For React Native basics:
+Look up: useState, useEffect, useContext
+Practice: Managing component state
+For Navigation:
+Look up: Expo Router documentation
+Practice: File-based routing
