@@ -1,25 +1,77 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Button, Alert } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
+  const { user, isLoggedIn, isLoading, signIn, signOut } = useAuth();
+
+  const handleTestLogin = async () => {
+    try {
+      // Test with demo credentials - replace with real ones
+      await signIn('testuser', 'testpass123');
+      Alert.alert('Success', 'Login successful!');
+    } catch (error) {
+      Alert.alert('Error', 'Login failed. Check your backend is running.');
+    }
+  };
+
+  const handleTestLogout = async () => {
+    try {
+      await signOut();
+      Alert.alert('Success', 'Logout successful!');
+    } catch (error) {
+      Alert.alert('Error', 'Logout failed');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText>Loading auth...</ThemedText>
+      </ThemedView>
+    );
+  }
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+        <Ionicons
+          size={200}
+          color="#808080"
+          name="home"
+          style={styles.headerIcon}
         />
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
+      </ThemedView>
+      
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">🔐 Auth Test</ThemedText>
+        {isLoggedIn ? (
+          <ThemedView>
+            <ThemedText>✅ Logged in as: {user?.username}</ThemedText>
+            <ThemedText>Email: {user?.email}</ThemedText>
+            <Button title="Logout" onPress={handleTestLogout} />
+          </ThemedView>
+        ) : (
+          <ThemedView>
+            <ThemedText>❌ Not logged in</ThemedText>
+            <Button title="Test Login" onPress={handleTestLogin} />
+            <ThemedText style={{fontSize: 12, marginTop: 8}}>
+              Note: Make sure your backend is running on localhost:8001
+            </ThemedText>
+          </ThemedView>
+        )}
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -88,11 +140,9 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  headerIcon: {
+    bottom: -90,
+    left: -35,
     position: 'absolute',
   },
 });

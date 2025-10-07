@@ -18,4 +18,27 @@ export const getToken = async (): Promise<string | null> => {
         console.error('Error getting token:', error);
         return null;
     }
+}
+
+export const removeToken = async () => {
+    try {
+        await AsyncStorage.removeItem(TOKEN_KEY);
+        await AsyncStorage.removeItem(USER_KEY);
+    } catch (error) {
+        console.error('Error removing token:', error);
+    }
+};
+
+export const isLoggedIn = async (): Promise<boolean> => {
+    const token = await getToken();
+    return token !== null;
+};
+
+//  Save user data too
+export const saveUserData = async (userData: any) => {
+    try {
+        await AsyncStorage.setItem(USER_KEY, JSON.stringify(userData));
+    } catch (error) {
+        console.error('Error saving user data:', error);
+    }
 };

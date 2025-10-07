@@ -25,3 +25,23 @@ export interface AuthResponse {
     };
     token: string;
 }
+
+
+
+export interface User{
+    id: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    is_active: boolean;
+    date_joined: string;
+}
+
+export interface AuthContextType{
+    user:  User| null;
+    isLoggedIn: boolean;
+    isLoading: boolean;
+    signIn: (email: string, password: string) => Promise<void>;
+    signOut: () => Promise<void>;
+};
