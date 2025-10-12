@@ -80,3 +80,40 @@ Practice: Managing component state
 For Navigation:
 Look up: Expo Router documentation
 Practice: File-based routing
+
+
+
+still todo 
+1. Listing Service API Integration
+ Create services/api/listingService.ts
+getListings() - Fetch all listings
+getListing(id) - Get single listing details
+createListing() - Admin only
+updateListing(id) - Admin only
+deleteListing(id) - Admin only
+addReview(listingId) - User can review
+2. Listing Context
+ Create context/ListingContext.tsx
+State: listings array, selected listing, loading
+Actions: fetch, create, update, delete, favorite
+3. Listing Components
+ components/listings/ListingCard.tsx - Display listing preview
+ components/listings/ListingList.tsx - Scrollable list
+ components/listings/ListingDetail.tsx - Full detail view
+4. Main Screens
+ Explore Tab ((tabs)/explore.tsx) - Browse all listings
+ Listing Detail (listing/[id].tsx) - View single listing
+ Create Listing (listing/create.tsx) - Add new (admin)
+ Edit Listing (listing/edit/[id].tsx) - Update (admin)
+ Favorites Tab ((tabs)/favorites.tsx) - Saved listings
+5. Profile Features
+ Complete profile screen with user info
+ Add logout button
+ Display user bookings/reviews
+🎨 Nice-to-Have Features:
+ Search & filters (price, location, type)
+ Image gallery/carousel
+ Booking system
+ Real-time availability
+ Push notifications
+ Map view integration

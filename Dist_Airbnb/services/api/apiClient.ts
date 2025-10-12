@@ -20,20 +20,38 @@ export const listingAPI: AxiosInstance = axios.create({
   }
 });
 
+// Add token to auth API requests
 authAPI.interceptors.request.use(async(config) => {
-  // todo get the token from storage and put it here
   const token = await getToken();
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });
- //this handles the response object
- // function that returns the response or another error function which returns an error
+
+// Add token to listing API requests
+listingAPI.interceptors.request.use(async(config) => {
+  const token = await getToken();
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
+});
+
+// Handle auth API responses
 authAPI.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    console.error('API Error:', error.response?.data);
+    console.error('Auth API Error:', error.response?.data);
+    return Promise.reject(error);
+  }
+);
+
+// Handle listing API responses
+listingAPI.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  (error) => {
+    console.error('Listing API Error:', error.response?.data);
     return Promise.reject(error);
   }
 );

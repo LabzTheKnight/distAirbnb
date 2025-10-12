@@ -4,12 +4,16 @@ import { authAPI } from "./apiClient";
 
 const login = async (loginData: LoginRequest): Promise<AuthResponse> => {
     try {
+        console.log('🌐 authService: Sending login request to backend...');
         const response = await authAPI.post<AuthResponse>('/login/', loginData);
+        console.log('📡 authService: Received response:', response.status, response.data);
+        console.log('💾 authService: Saving token...');
         await saveToken(response.data.token);
+        console.log('✅ authService: Token saved, returning data');
         return response.data;
 
     } catch (error) {
-        console.log('Login error:', error);
+        console.error('❌ authService: Login error:', error);
         throw error;
     }
     
@@ -29,7 +33,7 @@ const register = async (registrationData: RegisterRequest): Promise<AuthResponse
 const logout = async (): Promise<{message: string}> => {
     try{
         const response = await authAPI.post('/logout/');
-        await removeToken 
+        await removeToken();
         return response.data
     } catch (error){
         console.log('Logout error: ', error);

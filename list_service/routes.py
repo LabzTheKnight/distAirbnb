@@ -141,8 +141,8 @@ def create_listing():
 
 # api endpoint to list all listings with only id, name, price,
 # adress and image available for both user and admin
+# Public endpoint - no auth required for browsing
 @bp.route("/listings", methods=["GET"])
-@token_required
 def get_listings():
     try:
         limit = int(request.args.get("limit", 10))
@@ -173,8 +173,8 @@ def get_listings():
 
 # api enpoint to return detailed info about a specific listing
 # for both user and admin
+# Public endpoint - no auth required for viewing details
 @bp.route("/listings/<string:listing_id>", methods=["GET"])
-@token_required
 def get_listing(listing_id):
     try:
         listing = Listing.objects.get(_id=listing_id)
