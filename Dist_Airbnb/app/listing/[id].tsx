@@ -23,12 +23,19 @@ export default function ListingDetailScreen() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  // Mark as hydrated on client
   useEffect(() => {
-    if (id) {
+    setIsHydrated(true);
+  }, []);
+
+  // Only fetch listing after hydration
+  useEffect(() => {
+    if (isHydrated && id) {
       selectListing(id);
     }
-  }, [id]);
+  }, [isHydrated, id]);
 
   const handleAddReview = async () => {
     if (!reviewComment.trim()) {
@@ -49,7 +56,8 @@ export default function ListingDetailScreen() {
     }
   };
 
-  if (isLoading) {
+  // Show loading state
+  if (isLoading || !isHydrated) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#3B82F6" />
@@ -58,6 +66,7 @@ export default function ListingDetailScreen() {
     );
   }
 
+  // Show not found after hydration
   if (!selectedListing) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">

@@ -32,15 +32,23 @@ export function ListingProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load initial listings on mount
+  // First effect: Mark as hydrated on client
   useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Second effect: Load initial listings only after hydration
+  useEffect(() => {
+    if (!isHydrated) return;
+
     const loadInitialListings = async () => {
       await refreshListings(20, 0);
     };
     
     loadInitialListings();
-  }, []);
+  }, [isHydrated]);
 
   // Refresh listings from API
   const refreshListings = async (limit: number = 20, offset: number = 0) => {

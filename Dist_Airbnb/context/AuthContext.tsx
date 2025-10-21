@@ -17,10 +17,20 @@ const AuthContext = createContext<AuthContextType>(defaultAuthContext)
 
 export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser]= useState <User | null>(null);
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(false) // Start as false for SSR
+    const [isHydrated, setIsHydrated] = useState(false);
     const isLoggedIn = user !== null;
 
+    // First effect: Mark as hydrated on client and start loading
     useEffect(() => {
+        setIsHydrated(true);
+        setLoading(true); // Only start loading on client
+    }, []);
+
+    // Second effect: Check auth status only after hydration
+    useEffect(() => {
+        if (!isHydrated) return;
+
         const checkAuthStatus = async () => {
             try {
                 console.log('🔍 AuthContext: Checking for existing session...');
@@ -43,7 +53,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         };
         
         checkAuthStatus();
-    }, []);
+    }, [isHydrated]);
 
     return(
         <AuthContext.Provider value={{
