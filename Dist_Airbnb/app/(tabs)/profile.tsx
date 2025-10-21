@@ -30,7 +30,7 @@ export default function ProfileScreen() {
     // If not logged in, show login prompt
     if (!user) {
         return (
-            <View className="flex-1 bg-gray-50">
+            <ScrollView className="flex-1 bg-gray-50">
                 <LinearGradient
                     colors={['#3B82F6', '#8B5CF6', '#EC4899']}
                     start={{ x: 0, y: 0 }}
@@ -55,7 +55,7 @@ export default function ProfileScreen() {
                         <Text className="text-white font-semibold text-lg">Sign In</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 
