@@ -1,0 +1,17 @@
+node_modules
+.expo
+.expo-shared
+dist
+.git
+.gitignore
+npm-debug.log
+.DS_Store
+*.log
+.vscode
+.idea
+coverage
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

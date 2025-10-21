@@ -29,6 +29,20 @@ services:
     volumes:
       - ./list_service:/app
 
+  frontend:
+    build: ./Dist_Airbnb
+    ports:
+      - "8080:80"
+    environment:
+      - EXPO_PUBLIC_AUTH_URL=http://auth-service:8001/api/auth
+      - EXPO_PUBLIC_LISTING_URL=http://list-service:5000/api
+    depends_on:
+      - auth-service
+      - list-service
+    volumes:
+      - ./Dist_Airbnb:/usr/src/app
+    # For development, don't auto-restart; adjust for production if needed
+
   mongo:
     image: mongo:5.0
     ports:

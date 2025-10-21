@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -223,7 +224,8 @@ export default function ListingDetailScreen() {
                       </Text>
                       {review.date && (
                         <Text className="text-xs text-gray-500">
-                          {new Date(review.date).toLocaleDateString()}
+                  {/* Render deterministic ISO date to avoid SSR/client locale mismatches */}
+                  {new Date(review.date).toISOString().split('T')[0]}
                         </Text>
                       )}
                     </View>
