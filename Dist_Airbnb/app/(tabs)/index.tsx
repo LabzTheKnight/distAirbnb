@@ -34,6 +34,16 @@ export default function HomeScreen() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-gray-50">
+        <View className="bg-white rounded-2xl p-8 shadow-lg">
+          <Text className="text-xl font-semibold text-gray-700">Loading...</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView className="flex-1 bg-gray-50">
       {/* Header with Gradient */}
@@ -50,7 +60,7 @@ export default function HomeScreen() {
             <HelloWave />
           </View>
           <Text className="text-blue-100 mt-2 text-base">
-            Your distributed Airbnb experience starts here
+            Your distributed Airbnb experience starts here and now
           </Text>
         </View>
       </LinearGradient>
@@ -126,7 +136,7 @@ export default function HomeScreen() {
             Edit <Text className="font-bold text-blue-600">app/(tabs)/index.tsx</Text> to see
             changes. Press{" "}
             <Text className="font-semibold text-gray-800 bg-gray-100 px-2 py-1 rounded">
-              {Platform.OS === 'web' ? 'F12' : Platform.OS === 'ios' ? 'cmd + d' : 'cmd + m'}
+              {Platform.select({ ios: "cmd + d", android: "cmd + m", web: "F12" })}
             </Text>{" "}
             to open developer tools.
           </Text>
