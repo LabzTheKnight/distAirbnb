@@ -60,7 +60,7 @@ export default function HomeScreen() {
             <HelloWave />
           </View>
           <Text className="text-blue-100 mt-2 text-base">
-            Your distributed Airbnb experience starts here and now ❤️❤️❤️
+            Your distributed Airbnb experience starts here and now ❤️❤️❤️❤️❤️
           </Text>
         </View>
       </LinearGradient>
