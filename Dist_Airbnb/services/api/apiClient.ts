@@ -1,8 +1,9 @@
 import axios,  {AxiosInstance, AxiosResponse} from 'axios';
 import { getToken } from '../storage/tokenStorage';
 
-const AUTH_BASE_URL = 'http://localhost:8001/api/auth';
-const LISTING_BASE_URL = 'http://localhost:5000/api';
+// Use environment variables for URLs (Docker-friendly), fallback to localhost for development
+const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_URL || 'http://localhost:8001/api/auth';
+const LISTING_BASE_URL = process.env.EXPO_PUBLIC_LISTING_URL || 'http://localhost:5000/api';
 
 export const authAPI: AxiosInstance = axios.create({
   baseURL: AUTH_BASE_URL,

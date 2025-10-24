@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -80,11 +80,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1"
-        >
-            <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 bg-gray-50" showsVerticalScrollIndicator={false}>
                 {/* Header with Gradient */}
                 <LinearGradient
                     colors={['#3B82F6', '#8B5CF6', '#EC4899']}
@@ -228,6 +224,5 @@ export default function LoginScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </KeyboardAvoidingView>
     );
 }

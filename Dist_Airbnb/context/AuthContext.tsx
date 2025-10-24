@@ -3,16 +3,34 @@ import { User, LoginRequest, AuthContextType } from "@/types/auth";
 import { login, logout, getCurrentUser , register } from "@/services/api/authService";
 import { isLoggedIn as checkStoredLogin, removeToken } from "@/services/storage/tokenStorage";
 
+// Default context value to prevent null errors
+const defaultAuthContext: AuthContextType = {
+    user: null,
+    isLoading: true,
+    isLoggedIn: false,
+    signIn: async () => { throw new Error('AuthContext not initialized') },
+    signOut: async () => { throw new Error('AuthContext not initialized') },
+    signUp: async () => { throw new Error('AuthContext not initialized') },
+};
 
-
-const AuthContext = createContext<AuthContextType | null>(null)
+const AuthContext = createContext<AuthContextType>(defaultAuthContext)
 
 export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser]= useState <User | null>(null);
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(false) // Start as false for SSR
+    const [isHydrated, setIsHydrated] = useState(false);
     const isLoggedIn = user !== null;
 
+    // First effect: Mark as hydrated on client and start loading
     useEffect(() => {
+        setIsHydrated(true);
+        setLoading(true); // Only start loading on client
+    }, []);
+
+    // Second effect: Check auth status only after hydration
+    useEffect(() => {
+        if (!isHydrated) return;
+
         const checkAuthStatus = async () => {
             try {
                 console.log('🔍 AuthContext: Checking for existing session...');
@@ -35,7 +53,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         };
         
         checkAuthStatus();
-    }, []);
+    }, [isHydrated]);
 
     return(
         <AuthContext.Provider value={{
@@ -94,7 +112,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context){
+    if (!context) {
         throw new Error('useAuth must be used within AuthProvider')
     }
     return context;
