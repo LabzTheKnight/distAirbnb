@@ -6,6 +6,12 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Build args for injecting API URLs at build time
+ARG EXPO_PUBLIC_AUTH_URL
+ARG EXPO_PUBLIC_LISTING_URL
+ENV EXPO_PUBLIC_AUTH_URL=${EXPO_PUBLIC_AUTH_URL}
+ENV EXPO_PUBLIC_LISTING_URL=${EXPO_PUBLIC_LISTING_URL}
+
 # Install dependencies (including devDependencies needed for build)
 RUN npm ci
 

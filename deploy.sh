@@ -49,66 +49,28 @@ if [ -z "$VPS_HOST" ]; then
 fi
 
 echo ""
-echo "Creating production configuration..."
+echo "Using committed docker-compose.prod.yml for production configuration."
+echo "Ensure /srv/distairbnb/.env contains the production variables you want (VPS_HOST, EXPO_PUBLIC_*, MONGO_URI, etc.)."
 
-# Create a temporary production docker-compose file
-cat > docker-compose.prod.tmp.yml <<EOF
-version: '3.8'
+# Verify compose file exists
+if [ ! -f docker-compose.prod.yml ]; then
+  echo "Error: docker-compose.prod.yml not found in repository. Please add it and re-run."
+  exit 1
+fi
 
-services:
-  frontend:
-    build: ./Dist_Airbnb
-    ports:
-      # map container port 80 -> host 8080 so host NGINX can continue to listen on port 80
-      - "8080:80"
-    environment:
-      # For browser clients, use same-origin relative paths; NGINX on the host will proxy these
-      - EXPO_PUBLIC_AUTH_URL=/api/auth
-      - EXPO_PUBLIC_LISTING_URL=/api/listings
-    depends_on:
-      - auth-service
-      - list-service
-    restart: unless-stopped
+# If ALLOWED_HOSTS isn't provided explicitly, set it from VPS_HOST so Django accepts requests
+if [ -z "$ALLOWED_HOSTS" ]; then
+  ALLOWED_HOSTS="${VPS_HOST},localhost"
+  export ALLOWED_HOSTS
+fi
 
-  auth-service:
-    build: ./auth_service
-    ports:
-      - "8001:8001"
-    environment:
-      - DEBUG=False
-      - ALLOWED_HOSTS=${VPS_HOST},localhost
-    restart: unless-stopped
-
-  list-service:
-    build: ./list_service
-    ports:
-      - "5000:5000"
-    environment:
-      - AUTH_SERVICE_URL=http://auth-service:8001/api/auth
-      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/airbnb}
-    depends_on:
-      - auth-service
-      - mongo
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:5.0
-    volumes:
-      - mongo_data:/data/db
-    restart: unless-stopped
-
-volumes:
-  mongo_data:
-EOF
-
-echo "Configuration created successfully!"
 echo ""
 echo "Building Docker images... (this may take several minutes)"
-${COMPOSE_CMD} -f docker-compose.prod.tmp.yml build
+${COMPOSE_CMD} -f docker-compose.prod.yml build
 
 echo ""
 echo "Starting services..."
-${COMPOSE_CMD} -f docker-compose.prod.tmp.yml up -d
+${COMPOSE_CMD} -f docker-compose.prod.yml up -d
 
 echo ""
 echo "Waiting for services to start..."
@@ -116,7 +78,7 @@ sleep 10
 
 echo ""
 echo "Checking service status..."
-${COMPOSE_CMD} -f docker-compose.prod.tmp.yml ps
+${COMPOSE_CMD} -f docker-compose.prod.yml ps
 
 echo ""
 echo "==================================="
@@ -129,8 +91,8 @@ echo "  Auth API:    http://${VPS_HOST}:8001/api/auth/"
 echo "  Listing API: http://${VPS_HOST}:5000/api/"
 echo ""
 echo "To view logs, run:"
-echo "  ${COMPOSE_CMD} -f docker-compose.prod.tmp.yml logs -f"
+echo "  ${COMPOSE_CMD} -f docker-compose.prod.yml logs -f"
 echo ""
 echo "To stop services, run:"
-echo "  ${COMPOSE_CMD} -f docker-compose.prod.tmp.yml down"
+echo "  ${COMPOSE_CMD} -f docker-compose.prod.yml down"
 echo ""
