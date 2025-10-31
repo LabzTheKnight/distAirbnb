@@ -57,6 +57,7 @@ class Review(DynamicEmbeddedDocument):
 class Listing(DynamicDocument):
     meta = {
         "collection": "listingsAndReviews",
+        "strict": False,  
         "indexes": [
             "name",
             {"fields": ["-price"]}

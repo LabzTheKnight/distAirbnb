@@ -54,12 +54,20 @@ export function ListingProvider({ children }: { children: React.ReactNode }) {
   const refreshListings = async (limit: number = 20, offset: number = 0) => {
     setIsLoading(true);
     setError(null);
-    
     try {
-      console.log('🏠 ListingContext: Fetching listings...');
+      console.log(`🏠 ListingContext: Fetching listings with limit=${limit}, offset=${offset}`);
       const data = await fetchListings(limit, offset);
-      setListings(data);
-      console.log(`✅ ListingContext: Loaded ${data.length} listings`);
+      if (offset === 0) {
+        setListings(data);
+      } else {
+        setListings(prev => {
+          // Avoid duplicates if backend returns overlapping data
+          const existingIds = new Set(prev.map(l => l.id));
+          const newListings = data.filter(l => !existingIds.has(l.id));
+          return [...prev, ...newListings];
+        });
+      }
+      console.log(`✅ ListingContext: Loaded ${data.length} listings (offset=${offset})`);
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Failed to load listings';
       setError(errorMessage);

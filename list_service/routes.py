@@ -163,6 +163,16 @@ def get_listings():
 
 
         return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# api endpoint to get total count of listings
+@bp.route("/listings/count", methods=["GET"])
+def get_listings_count():
+    try:
+        count = Listing.objects.count()
+        return jsonify({"count": count}), 200
 
 
     except Exception as e:

@@ -11,13 +11,15 @@ interface ListingCardProps {
   onPress?: () => void;
   onFavorite?: () => void;
   isFavorite?: boolean;
+  tall?: boolean;
 }
 
-export default function ListingCard({ 
-  listing, 
-  onPress, 
-  onFavorite, 
-  isFavorite = false 
+export default function ListingCard({
+  listing,
+  onPress,
+  onFavorite,
+  isFavorite = false,
+  tall = false
 }: ListingCardProps) {
   return (
     <TouchableOpacity 
@@ -30,7 +32,7 @@ export default function ListingCard({
       <View className="relative">
         <Image 
           source={{ uri: listing.imageUrl || 'https://via.placeholder.com/400x250' }} 
-          className="w-full h-56"
+          className={tall ? "w-full h-96" : "w-full h-56"}
           resizeMode="cover"
         />
         
