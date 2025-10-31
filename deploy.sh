@@ -15,10 +15,15 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "Error: Docker Compose is not installed. Please install Docker Compose first."
-    exit 1
+# Detect docker compose command (support both v1 binary and v2 plugin)
+COMPOSE_CMD=""
+if command -v docker-compose &> /dev/null; then
+  COMPOSE_CMD="docker-compose"
+elif docker compose version &> /dev/null 2>&1; then
+  COMPOSE_CMD="docker compose"
+else
+  echo "Error: Docker Compose is not installed. Install the 'docker-compose' binary or the Docker Compose v2 plugin."
+  exit 1
 fi
 
 # If VPS_HOST is already set (for non-interactive runs / GitHub Actions), use it.
@@ -99,11 +104,11 @@ EOF
 echo "Configuration created successfully!"
 echo ""
 echo "Building Docker images... (this may take several minutes)"
-docker-compose -f docker-compose.prod.tmp.yml build
+${COMPOSE_CMD} -f docker-compose.prod.tmp.yml build
 
 echo ""
 echo "Starting services..."
-docker-compose -f docker-compose.prod.tmp.yml up -d
+${COMPOSE_CMD} -f docker-compose.prod.tmp.yml up -d
 
 echo ""
 echo "Waiting for services to start..."
@@ -111,7 +116,7 @@ sleep 10
 
 echo ""
 echo "Checking service status..."
-docker-compose -f docker-compose.prod.tmp.yml ps
+${COMPOSE_CMD} -f docker-compose.prod.tmp.yml ps
 
 echo ""
 echo "==================================="
@@ -124,8 +129,8 @@ echo "  Auth API:    http://${VPS_HOST}:8001/api/auth/"
 echo "  Listing API: http://${VPS_HOST}:5000/api/"
 echo ""
 echo "To view logs, run:"
-echo "  docker-compose -f docker-compose.prod.tmp.yml logs -f"
+echo "  ${COMPOSE_CMD} -f docker-compose.prod.tmp.yml logs -f"
 echo ""
 echo "To stop services, run:"
-echo "  docker-compose -f docker-compose.prod.tmp.yml down"
+echo "  ${COMPOSE_CMD} -f docker-compose.prod.tmp.yml down"
 echo ""
