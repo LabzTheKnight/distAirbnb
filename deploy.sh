@@ -85,7 +85,7 @@ services:
       - "5000:5000"
     environment:
       - AUTH_SERVICE_URL=http://auth-service:8001/api/auth
-      - MONGO_URI=mongodb://mongo:27017/airbnb
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/airbnb}
     depends_on:
       - auth-service
       - mongo

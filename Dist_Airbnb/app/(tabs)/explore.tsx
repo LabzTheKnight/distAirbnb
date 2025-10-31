@@ -23,7 +23,8 @@ const ExploreScreen = () => {
   useEffect(() => {
     const fetchTotal = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/listings/count');
+        // Use same-origin relative path so nginx can proxy to the listings service
+        const response = await fetch('/api/listings/count');
         const data = await response.json();
         setTotalAvailable(data.count || listings.length);
       } catch (err) {
