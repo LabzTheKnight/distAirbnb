@@ -21,12 +21,26 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-# Prompt for VPS IP or domain
-read -p "Enter your VPS IP address or domain: " VPS_HOST
-
+# If VPS_HOST is already set (for non-interactive runs / GitHub Actions), use it.
+# Otherwise fall back to prompting the user.
 if [ -z "$VPS_HOST" ]; then
+  # allow a pre-existing .env on the VPS to set VPS_HOST and other values
+  if [ -f /srv/distairbnb/.env ]; then
+    echo "Sourcing /srv/distairbnb/.env"
+    set -o allexport
+    # shellcheck disable=SC1091
+    source /srv/distairbnb/.env
+    set +o allexport
+  fi
+
+  if [ -z "$VPS_HOST" ]; then
+    read -p "Enter your VPS IP address or domain: " VPS_HOST
+  fi
+
+  if [ -z "$VPS_HOST" ]; then
     echo "Error: VPS host cannot be empty"
     exit 1
+  fi
 fi
 
 echo ""
@@ -40,10 +54,12 @@ services:
   frontend:
     build: ./Dist_Airbnb
     ports:
-      - "80:80"
+      # map container port 80 -> host 8080 so host NGINX can continue to listen on port 80
+      - "8080:80"
     environment:
-      - EXPO_PUBLIC_AUTH_URL=http://${VPS_HOST}:8001/api/auth
-      - EXPO_PUBLIC_LISTING_URL=http://${VPS_HOST}:5000/api
+      # For browser clients, use same-origin relative paths; NGINX on the host will proxy these
+      - EXPO_PUBLIC_AUTH_URL=/api/auth
+      - EXPO_PUBLIC_LISTING_URL=/api/listings
     depends_on:
       - auth-service
       - list-service
