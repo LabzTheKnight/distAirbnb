@@ -22,7 +22,7 @@ export default function HomeScreen() {
         >
           <View className="max-w-3xl w-full flex items-center justify-center mx-auto">
             <Text className="text-2xl md:text-3xl font-extrabold text-white mb-2 text-center drop-shadow-lg tracking-tight" style={{lineHeight: 36}}>
-              DistAirbnb
+              DistAirbnb ❤️
             </Text>
             <HelloWave />
             <Text className="text-base md:text-lg text-blue-100 mt-3 text-center max-w-lg">
