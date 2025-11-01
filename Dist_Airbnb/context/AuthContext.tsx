@@ -81,10 +81,18 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             signOut: async () => {
                 setLoading(true)
                 try {
-                    await logout(); 
+                    // Try to notify the backend, but don't let API failures block the local sign-out
+                    await logout().catch((err) => {
+                        console.error('AuthContext: logout API failed, continuing local sign-out', err);
+                    });
+
+                    // Always remove local token and user state so the UI updates immediately
+                    await removeToken();
                     setUser(null);
                 } catch (error) {
-                    console.error('Sign out error:', error);   
+                    console.error('Sign out unexpected error:', error);
+                    // Ensure local cleanup even on unexpected errors
+                    try { await removeToken(); } catch (e) { /* ignore */ }
                     setUser(null);
                 } finally{
                     setLoading(false)
