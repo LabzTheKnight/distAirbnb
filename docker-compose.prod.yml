@@ -8,8 +8,8 @@ services:
         EXPO_PUBLIC_AUTH_URL: ${EXPO_PUBLIC_AUTH_URL:-/api/auth}
         EXPO_PUBLIC_LISTING_URL: ${EXPO_PUBLIC_LISTING_URL:-/api/listings}
     ports:
-      # map container port 80 -> host 8080 so host NGINX can continue to listen on port 80
-      - "8080:80"
+      # map container port 80 -> host 8080 on localhost so host NGINX can proxy to it
+      - "127.0.0.1:8080:80"
     environment:
       - EXPO_PUBLIC_AUTH_URL=${EXPO_PUBLIC_AUTH_URL:-/api/auth}
       - EXPO_PUBLIC_LISTING_URL=${EXPO_PUBLIC_LISTING_URL:-/api/listings}
@@ -21,7 +21,8 @@ services:
   auth-service:
     build: ./auth_service
     ports:
-      - "8001:8001"
+      # bind auth API to localhost only so it's not publicly exposed
+      - "127.0.0.1:8001:8001"
     environment:
       - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost}
@@ -30,7 +31,8 @@ services:
   list-service:
     build: ./list_service
     ports:
-      - "5000:5000"
+      # bind listings API to localhost only so it's not publicly exposed
+      - "127.0.0.1:5000:5000"
     environment:
       - AUTH_SERVICE_URL=http://auth-service:8001/api/auth
       - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/airbnb}

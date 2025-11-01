@@ -16,5 +16,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            # pass VPS host into the remote deploy script so it runs non-interactively
-            VPS_HOST=${{ secrets.SSH_HOST }} bash /srv/deploy.sh
+            # run the Dist_Airbnb deploy script on the VPS
+            VPS_HOST=${{ secrets.SSH_HOST }} bash /srv/deploy_distAirbnb.sh
