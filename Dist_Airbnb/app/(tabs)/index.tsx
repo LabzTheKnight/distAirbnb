@@ -8,7 +8,8 @@ import ListingCard from "@/components/listings/ListingCard";
 export default function HomeScreen() {
   const router = useRouter();
   const { listings } = useListings();
-  const featuredListings = listings.slice(0, 5);
+  // Show 10 featured stays on the index page
+  const featuredListings = listings.slice(0, 10);
 
   return (
     <ScrollView className="flex-1 bg-gradient-to-b from-blue-100 via-white to-pink-50 min-h-screen">
@@ -22,9 +23,8 @@ export default function HomeScreen() {
         >
           <View className="max-w-3xl w-full flex items-center justify-center mx-auto">
             <Text className="text-2xl md:text-3xl font-extrabold text-white mb-2 text-center drop-shadow-lg tracking-tight" style={{lineHeight: 36}}>
-              DistAirbnb ❤️
+              Distributed Airbnb 
             </Text>
-            <HelloWave />
             <Text className="text-base md:text-lg text-blue-100 mt-3 text-center max-w-lg">
               Discover unique stays and experiences from a distributed, scalable platform. Fast, secure, and beautiful—built for the modern web.
             </Text>
@@ -46,17 +46,13 @@ export default function HomeScreen() {
                 <Text className="text-blue-600 font-semibold text-base">View All</Text>
               </TouchableOpacity>
             </View>
-            <View className="flex flex-col items-center">
+            {/* Responsive two-column grid: one column on small screens, two on md+ */}
+            <View className="flex flex-row flex-wrap -mx-2">
               {featuredListings.map(listing => (
-                <View
-                  key={listing.id}
-                  className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 w-full max-w-2xl"
-                
-                >
+                <View key={listing.id} className="w-full md:w-1/2 px-2 mb-4">
                   <ListingCard
                     listing={listing}
                     onPress={() => router.push(`/listing/${listing.id}`)}
-                    tall={true}
                   />
                 </View>
               ))}

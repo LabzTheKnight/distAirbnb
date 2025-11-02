@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -47,40 +47,35 @@ export default function FavoritesScreen() {
         </View>
       </LinearGradient>
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={handleRefresh}
-            tintColor="#EF4444"
-          />
-        }
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
-      >
-        {/* Count */}
-        {favoriteListings.length > 0 && (
-          <View className="mx-4 mb-3">
-            <Text className="text-gray-600 font-medium">
-              {favoriteListings.length} {favoriteListings.length === 1 ? 'favorite' : 'favorites'}
-            </Text>
-          </View>
+      <FlatList
+        data={favoriteListings}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={() => (
+          favoriteListings.length > 0 ? (
+            <View className="mb-3 px-4">
+              <Text className="text-gray-600 font-medium">
+                {favoriteListings.length} {favoriteListings.length === 1 ? 'favorite' : 'favorites'}
+              </Text>
+            </View>
+          ) : null
         )}
-
-        {/* Favorites List */}
-        {favoriteListings.length > 0 ? (
-          favoriteListings.map(listing => (
+        renderItem={({ item }) => (
+          <View style={{ flex: 1, paddingHorizontal: 8, marginBottom: 16 }}>
             <ListingCard
-              key={listing.id}
-              listing={listing}
-              onPress={() => router.push(`/listing/${listing.id}`)}
-              onFavorite={() => toggleFavorite(listing.id)}
+              listing={item}
+              onPress={() => router.push(`/listing/${item.id}`)}
+              onFavorite={() => toggleFavorite(item.id)}
               isFavorite={true}
             />
-          ))
-        ) : (
-          // Empty State
+          </View>
+        )}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        onEndReachedThreshold={0.5}
+        refreshing={isLoading}
+        onRefresh={handleRefresh}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 24, paddingHorizontal: 16 }}
+        ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-32 px-8">
             <View className="bg-red-100 rounded-full p-6 mb-4">
               <Ionicons name="heart-outline" size={64} color="#EF4444" />
@@ -100,8 +95,9 @@ export default function FavoritesScreen() {
               </Text>
             </View>
           </View>
-        )}
-      </ScrollView>
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }

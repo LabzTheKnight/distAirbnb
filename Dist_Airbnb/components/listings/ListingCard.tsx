@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ListingPreview } from '@/types/listing';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 32; // Full width with padding
+// Use responsive width on web: full width of parent with a maxWidth for large screens
+const CARD_MAX_WIDTH = 900;
 
 interface ListingCardProps {
   listing: ListingPreview;
@@ -25,8 +25,8 @@ export default function ListingCard({
     <TouchableOpacity 
       onPress={onPress}
       activeOpacity={0.9}
-      className="bg-white rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden"
-      style={{ width: CARD_WIDTH }}
+      className="bg-white rounded-2xl shadow-lg mb-4 overflow-hidden"
+      style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, alignSelf: 'center' }}
     >
       {/* Image Container */}
       <View className="relative">

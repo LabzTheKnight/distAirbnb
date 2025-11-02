@@ -1,14 +1,13 @@
 import React from 'react';
-import { View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 32;
+const CARD_MAX_WIDTH = 900;
 
 export default function ListingCardSkeleton() {
   return (
     <View 
-      className="bg-white rounded-2xl shadow-lg mb-4 mx-4 overflow-hidden animate-pulse"
-      style={{ width: CARD_WIDTH }}
+      className="bg-white rounded-2xl shadow-lg mb-4 overflow-hidden animate-pulse"
+      style={{ width: '100%', maxWidth: CARD_MAX_WIDTH, alignSelf: 'center' }}
     >
       {/* Image Skeleton */}
       <View className="w-full h-56 bg-gray-200" />
