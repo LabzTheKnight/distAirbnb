@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./Dist_Airbnb
+      args:
+        EXPO_PUBLIC_AUTH_URL: ${EXPO_PUBLIC_AUTH_URL:-/api/auth}
+        EXPO_PUBLIC_LISTING_URL: ${EXPO_PUBLIC_LISTING_URL:-/api/listings}
+    ports:
+      # map container port 80 -> host 8080 on localhost so host NGINX can proxy to it
+      - "127.0.0.1:8080:80"
+    environment:
+      - EXPO_PUBLIC_AUTH_URL=${EXPO_PUBLIC_AUTH_URL:-/api/auth}
+      - EXPO_PUBLIC_LISTING_URL=${EXPO_PUBLIC_LISTING_URL:-/api/listings}
+    depends_on:
+      - auth-service
+      - list-service
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth_service
+    ports:
+      # bind auth API to localhost only so it's not publicly exposed
+      - "127.0.0.1:8001:8001"
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost}
+    restart: unless-stopped
+
+  list-service:
+    build: ./list_service
+    ports:
+      # bind listings API to localhost only so it's not publicly exposed
+      - "127.0.0.1:5000:5000"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8001/api/auth
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/airbnb}
+    depends_on:
+      - auth-service
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:5.0
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
