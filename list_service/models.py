@@ -8,9 +8,6 @@ from dotenv import load_dotenv
 from mongoengine import (
     connect,
     Document,
-    DynamicDocument,
-    EmbeddedDocument,
-    DynamicEmbeddedDocument,
     StringField,
     Decimal128Field,
     IntField,
@@ -18,10 +15,9 @@ from mongoengine import (
     DateField,
     DateTimeField,
     ListField,
-    DictField,
-    EmbeddedDocumentField,
-    EmbeddedDocumentListField,
-    Decimal128Field
+    ReferenceField,
+    CASCADE,
+    ValidationError,
 )
 from bson.decimal128 import Decimal128
 from decimal import Decimal
@@ -30,92 +26,78 @@ from decimal import Decimal
 
 
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/sample_airbnb")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/house_ix")
 connect(host=MONGO_URI)
 
 
 
 
-class Review(DynamicEmbeddedDocument):
-    _id = StringField(required=True)
-    listing_id = StringField(required=True)
-    reviewer_id = StringField(required=True)
-    reviewer_name = StringField(required=True)
-    comments = StringField()
-    date = DateTimeField(default=datetime.utcnow)
 
+# ReferenceField, CASCADE and ValidationError are imported above
 
-
-
-#class Booking(EmbeddedDocument):
-#    user_id = StringField(required=True)  
-#    start_date = DateField(required=True)
-#    end_date = DateField(required=True)
-#    total_price = Decimal128Field(required=True)
-
-##    create listing model
-class Listing(DynamicDocument):
+class Room(Document):
     meta = {
-        "collection": "listingsAndReviews",
-        "strict": False,  
+        "collection": "rooms",
+        "strict": True,
         "indexes": [
-            "name",
-            {"fields": ["-price"]}
+            "room_number",
+            "room_type",
+            {"fields": ["price_per_night"]}
         ]
     }
+
     _id = StringField(primary_key=True)
-    name = StringField()
-    summary = StringField()
-    description = StringField(db_field="notes")
-    price = Decimal128Field()
-    property_type = StringField()
-    room_type = StringField()
-    accommodates = IntField()
-    bathrooms = Decimal128Field()
-    bedrooms = IntField()
-    beds = IntField()
-    security_deposit = Decimal128Field()
-    cleaning_fee = Decimal128Field()
-    extra_people = Decimal128Field()
-    guests_included = IntField()
-    weekly_price = Decimal128Field()
-    monthly_price = Decimal128Field()
-    cancellation_policy = StringField()
-    neighborhood_overview = StringField()
-    transit = StringField()
-    address = DictField()
-    location = DictField(geo_index=True)
+    room_number = IntField(required=True, unique=True)
+    room_type = StringField(required=True)  # single, double, suite
+    capacity = IntField(required=True)
+
+    price_per_night = Decimal128Field(required=True)
+
     amenities = ListField(StringField())
-    availability = DictField()
-    number_of_reviews = IntField()
-    review_scores = DictField()
-    reviews = EmbeddedDocumentListField(Review)
-    #bookings = EmbeddedDocumentListField(Booking)
+    image_urls = ListField(StringField())
+
+    active = BooleanField(default=True)
+
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
-    #saving the document will update the updated_at field
+
     def save(self, *args, **kwargs):
         self.updated_at = datetime.utcnow()
         return super().save(*args, **kwargs)
-    #to_json method to convert Decimal128 and Decimal fields to float
+
     def to_json(self):
-        def convert_values(data):
-            for key, value in data.items():
-                if isinstance(value, Decimal128):
-                    data[key] = float(value.to_decimal())
-                elif isinstance(value, Decimal):
-                    data[key] = float(value)
-                elif isinstance(value, dict):
-                    convert_values(value)
-                elif isinstance(value, list):
-                    for item in value:
-                        if isinstance(item, dict):
-                            convert_values(item)
-            return data
         data = super().to_mongo().to_dict()
-        data = convert_values(data)
+        for k, v in data.items():
+            if isinstance(v, Decimal128):
+                data[k] = float(v.to_decimal())
         return data
 
+class Booking(Document):
+    meta = {
+        "collection": "bookings",
+        "indexes": ["room", "start_date", "end_date"]
+    }
+
+    # reference the Room document for integrity
+    room = ReferenceField(Room, required=True, reverse_delete_rule=CASCADE)
+    # guest_id kept as string (no user model in this service)
+    guest_id = StringField(required=True)
+
+    start_date = DateField(required=True)
+    end_date = DateField(required=True)
+
+    status = StringField(
+        choices=["pending", "confirmed", "checked_in", "checked_out"],
+        default="pending"
+    )
+
+    total_price = Decimal128Field(required=True)
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    def clean(self):
+        """Validate that end_date is after start_date."""
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError("end_date must be the same or after start_date")
 
 
 # Example usage to connect to MongoDB and fetch a listing
@@ -124,10 +106,10 @@ if __name__ == "__main__":
     try:
         db = get_db()
         print("Connected to MongoDB. Collections:", db.list_collection_names())
-        listing = Listing.objects.first()
-        if listing:
-            print("One Listing:", listing.to_json())
+        room = Room.objects.first()
+        if room:
+            print("One Room:", room.to_json())
         else:
-            print("No listings found in the database.")
+            print("No rooms found in the database.")
     except Exception as e:
-        print("Failed to connect to MongoDB or fetch listing:", e)
+        print("Failed to connect to MongoDB or fetch room:", e)
